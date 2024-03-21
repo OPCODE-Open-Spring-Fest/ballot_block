@@ -27,7 +27,7 @@ contract ballot_block{
 
     function End() external returns(bool)
     {
-        //write your code here
+        //write your code HERE
     }
 
     function Add(address receiver) external returns(bool)
