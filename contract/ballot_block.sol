@@ -12,6 +12,7 @@ pragma solidity >=0.7.0<0.9.0;
 contract ballot_block{
 
     bool isVotingStarted;
+    bool isVotingEnded;
     struct vote{
         address candidateAddress;
         uint256 timeStamp;
@@ -20,22 +21,32 @@ contract ballot_block{
     mapping(address=>vote) public votes;
 
     event startingVote(address startedby);
-    event endingingVote(address endedby);
+    event endingVote(address endedby);
     event AddVote(address indexed voter, address receiver, uint256 timeStamp);
 
     constructor()
     {
         isVotingStarted=false;
+        isVotingEnded=false;
     }
 
     function Start() external returns (bool)
     {
         //write your code here
+        require(!isVotingStarted, "Voting has already started");
+        isVotingStarted = true;
+        emit startingVote(msg.sender);
+        return true;
     }
 
     function End() external returns(bool)
     {
         //write your code HERE
+        require(isVotingStarted, "Voting has not started yet");
+        require(!isVotingEnded, "Voting has already ended");
+        isVotingEnded = true;
+        emit endingVote(msg.sender);
+        return true;
     }
 
     function Add(address receiver) external returns(bool)
