@@ -10,7 +10,7 @@
 
 ## Contact 📱
 
-If you have any questions or feedback, please reach out to us at shobhit.2201140ec@iiitbh.ac.in 📧
+If you have any questions or feedback, please reach out to us at somesh.2201019cs@iiitbh.ac.in 📧
 
 ### Setup
 
