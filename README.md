@@ -1,10 +1,46 @@
-# About The Project
+# BALLOT BLOCK
 
-"BallotBlock" is a voting system that utilizes blockchain technology to offer a groundbreaking approach to secure, transparent, and tamper-resistant elections. Through blockchain, each vote is cryptographically encrypted and recorded as a transaction on a distributed ledger, creating an immutable record of the electoral process. This ensures the integrity of the voting process, as the decentralized nature of blockchain makes it exceedingly difficult for any single entity to manipulate or alter the results.
+## Introduction ✨
 
-Smart contracts, self-executing contracts with predefined rules encoded onto the blockchain, can be utilized in "BallotBlock" to automate various aspects of the voting process, such as voter eligibility verification, ballot casting, and result tabulation. These smart contracts can ensure that only eligible voters can participate, prevent double voting, and accurately tally the votes in a transparent manner.
+"BallotBlock" is a voting system that utilizes blockchain technology to offer a groundbreaking approach to secure, transparent, and tamper-resistant elections.
 
-Moreover, "BallotBlock" offers enhanced transparency, allowing voters to independently verify that their votes have been accurately recorded and counted. This transparency fosters trust in the electoral process and eliminates doubts about the legitimacy of election outcomes.
+## Technologies Used 🧑‍💻
 
-By leveraging blockchain technology, "BallotBlock" makes voting systems more secure, efficient, and resistant to fraud, ultimately strengthening democratic processes and promoting greater participation in elections. However, challenges such as ensuring voter privacy, accessibility, and scalability still need to be addressed for widespread adoption of blockchain-based voting systems like "BallotBlock."
+- Solidity
 
+## Contact 📱
+
+If you have any questions or feedback, please reach out to us at shobhit.2201140ec@iiitbh.ac.in 📧
+
+### Setup
+
+To set up **Ballot Block** on your local machine, follow these steps:
+
+1. Fork the repository:
+
+   - Click the "Fork" button at the top right corner of this repository's page on GitHub. This will create a copy of the repository in your GitHub account.
+
+2. Clone the forked repository:
+
+```bash
+git clone https://github.com/<yourusername>/ballot_block.git
+```
+
+3. Navigate to the project directory:
+
+```bash
+cd ballot_block
+```
+
+4. Install Node.js dependencies(make sure node is installed on your laptop):
+
+```bash
+npm i
+```
+5.  Open the contract folder and copy all the contents of the ballot_block.sol file and paste it on remix (or you can use VS Code but     remix ide is recommended). Remix ide(link) : http://lnkiy.in/Remix_ide
+6.  Create a new branch for your feature or bug fix.
+7.  Make your changes and commit them.
+8.  Push to the branch.
+9.  Submit a pull request with the issue number.
+
+You are good to go to make your contribution!! All the best!.
