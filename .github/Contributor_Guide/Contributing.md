@@ -31,34 +31,7 @@ If you want to contribute to ballot_block, submit a pull request.
 - url: `https://github.com/OPCODE-Open-Spring-Fest/ballot_block/compare/branch...YOURGITHUBUSERNAME:ballot_block:BRANCH?quick_pull=1&template=pr.md`
   
 ### Requirements
-    To run *ballot_block*, you need the following requirements:
-
-- [Node.js](https://nodejs.org/)
 
 
 ### Setup
 
-To set up *ballot_block* on your local machine, follow these steps:
-
-## Installation Steps
-
-1. Fork the repository:
-   - Click the "Fork" button at the top right corner of this repository's page on GitHub. This will create a copy of the repository in your GitHub account.
-
-2. Clone the forked repository:
-
-```bash
-git clone https://github.com/<yourusername>/ballot_block.git
-```
-
-
-3. Navigate to the project directory:
-```bash
-cd ballot_block
-```
-
-4. Install Node.js dependencies:
-```bash
-npm i
-```
-Congratulations! You have successfully set up *ballot_block* on your machine.
