@@ -30,7 +30,7 @@ contract ballot_block{
 
     function Start() external returns (bool)
     {
-        //write your code here
+        //Write your code here
     }
 
     function End() external returns(bool)
