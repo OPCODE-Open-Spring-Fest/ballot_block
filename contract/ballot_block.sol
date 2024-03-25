@@ -32,11 +32,12 @@ contract ballot_block{
 
     function Start() external returns (bool)
     {
-        //write your code here
+
         require(!isVotingStarted, "Voting has already started");
         isVotingStarted = true;
         emit startingVote(msg.sender);
         return true;
+
     }
 
     function End() external returns(bool)
@@ -45,6 +46,7 @@ contract ballot_block{
         require(isVotingStarted, "Voting has not started yet");
         require(!isVotingEnded, "Voting has already ended");
         isVotingEnded = true;
+        isVotingStarted = false;
         emit endingVote(msg.sender);
         return true;
     }
