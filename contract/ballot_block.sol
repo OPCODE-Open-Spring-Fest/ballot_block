@@ -12,6 +12,7 @@ pragma solidity >=0.7.0<0.9.0;
 contract ballot_block{
 
     bool isVotingStarted;
+    address public owner;
     struct vote{
         address candidateAddress;
         uint256 timeStamp;
@@ -20,27 +21,58 @@ contract ballot_block{
     mapping(address=>vote) public votes;
 
     event startingVote(address startedby);
-    event endingingVote(address endedby);
+    event endingVote(address endedby);
     event AddVote(address indexed voter, address receiver, uint256 timeStamp);
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can perform this action");
+        _;
+    }
+
+    modifier whenVotingActive() {
+        require(isVotingStarted, "Voting has not started yet");
+        _;
+    }
+
+    modifier whenVotingNotActive() {
+        require(!isVotingStarted, "Voting is already active");
+        _;
+    }
 
     constructor()
     {
+        owner=msg.sender;
         isVotingStarted=false;
     }
 
-    function Start() external returns (bool)
+    function Start() external onlyOwner whenVotingNotActive returns (bool)
     {
         //write your code here
+        isVotingStarted = true;
+        emit startingVote(msg.sender);
+        return true;
     }
 
-    function End() external returns(bool)
+    function End() external onlyOwner whenVotingActive returns(bool)
     {
         //write your code here
+        isVotingStarted = false;
+        emit endingVote(msg.sender);
+        return true;
     }
 
-    function Add(address receiver) external returns(bool)
+    function Add(address receiver) external whenVotingActive returns(bool)
     {
         // write your code here
+        require(votes[msg.sender].candidateAddress == address(0), "You have already voted");
+        votes[msg.sender] = vote(receiver, block.timestamp);
+        emit AddVote(msg.sender, receiver, block.timestamp);
+        return true;
+    }
+
+    function checkMyVote() external view returns (address candidateAddress, uint256 timeStamp) {
+        require(votes[msg.sender].candidateAddress != address(0), "You have not voted yet");
+        return (votes[msg.sender].candidateAddress, votes[msg.sender].timeStamp);
     }
 
     
