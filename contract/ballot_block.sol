@@ -12,6 +12,7 @@ pragma solidity >=0.7.0<0.9.0;
 contract ballot_block{
 
     bool isVotingStarted;
+    bool isVotingEnded;
     address public owner;
     struct vote{
         address candidateAddress;
@@ -43,11 +44,13 @@ contract ballot_block{
     {
         owner=msg.sender;
         isVotingStarted=false;
+        isVotingEnded=false;
     }
 
     function Start() external onlyOwner whenVotingNotActive returns (bool)
     {
         //write your code here
+        require(!isVotingStarted, "Voting has already started");
         isVotingStarted = true;
         emit startingVote(msg.sender);
         return true;
@@ -56,6 +59,9 @@ contract ballot_block{
     function End() external onlyOwner whenVotingActive returns(bool)
     {
         //write your code here
+        require(isVotingStarted, "Voting has not started yet");
+        require(!isVotingEnded, "Voting has already ended");
+        isVotingEnded = true;
         isVotingStarted = false;
         emit endingVote(msg.sender);
         return true;
