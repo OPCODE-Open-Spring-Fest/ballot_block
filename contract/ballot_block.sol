@@ -13,50 +13,47 @@ contract ballot_block{
 
     bool isVotingStarted;
     bool isVotingEnded;
-    address public owner;
     struct vote{
         address candidateAddress;
         uint256 timeStamp;
     }
 
-    mapping(address=>vote) public votes;
+    mapping(address => uint) public votesForCandidates;
+    mapping(address => bool) public hasVoted;
+
+    address[4] private candidates = [
+        0xdD870fA1b7C4700F2BD7f44238821C26f7392148,
+        0x583031D1113aD414F02576BD6afaBfb302140225,
+        0x4B0897b0513fdC7C541B6d9D7E929C4e5364D2dB,
+        0x14723A09ACff6D2A60DcdF7aA4AFf308FDDC160C
+    ];
 
     event startingVote(address startedby);
     event endingVote(address endedby);
-    event AddVote(address indexed voter, address receiver, uint256 timeStamp);
+    event AddVote(address indexed voter, address receiver);
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can perform this action");
-        _;
-    }
-
-    modifier whenVotingActive() {
-        require(isVotingStarted, "Voting has not started yet");
-        _;
-    }
-
-    modifier whenVotingNotActive() {
-        require(!isVotingStarted, "Voting is already active");
+    modifier onlyAfterVoteEnd() {
+        require(isVotingEnded, "Voting has not ended yet");
         _;
     }
 
     constructor()
     {
-        owner=msg.sender;
         isVotingStarted=false;
         isVotingEnded=false;
     }
 
-    function Start() external onlyOwner whenVotingNotActive returns (bool)
+    function Start() external returns (bool)
     {
-        //write your code here
+
         require(!isVotingStarted, "Voting has already started");
         isVotingStarted = true;
         emit startingVote(msg.sender);
         return true;
+
     }
 
-    function End() external onlyOwner whenVotingActive returns(bool)
+    function End() external returns(bool)
     {
         //write your code here
         require(isVotingStarted, "Voting has not started yet");
@@ -67,18 +64,37 @@ contract ballot_block{
         return true;
     }
 
-    function Add(address receiver) external whenVotingActive returns(bool)
+    function Add(address receiver) external returns(bool)
     {
         // write your code here
-        require(votes[msg.sender].candidateAddress == address(0), "You have already voted");
-        votes[msg.sender] = vote(receiver, block.timestamp);
-        emit AddVote(msg.sender, receiver, block.timestamp);
+        require(isVotingStarted, "Voting has not started");
+        require(!isVotingEnded, "Voting has already ended");
+        require(!hasVoted[msg.sender], "You have already voted");
+        require(isValidCandidate(receiver), "Not a valid candidate");
+
+        votesForCandidates[receiver] += 1;
+        hasVoted[msg.sender] = true;
+        emit AddVote(msg.sender, receiver);
         return true;
     }
 
-    function checkMyVote() external view returns (address candidateAddress, uint256 timeStamp) {
-        require(votes[msg.sender].candidateAddress != address(0), "You have not voted yet");
-        return (votes[msg.sender].candidateAddress, votes[msg.sender].timeStamp);
+    function result() external view onlyAfterVoteEnd returns (address winningCandidate, uint highestVotes) {
+        highestVotes = 0;
+        for (uint i = 0; i < candidates.length; i++) {
+            if (votesForCandidates[candidates[i]] > highestVotes) {
+                winningCandidate = candidates[i];
+                highestVotes = votesForCandidates[candidates[i]];
+            }
+        }
+    }
+
+    function isValidCandidate(address candidate) internal view returns (bool) {
+        for(uint i = 0; i < candidates.length; i++) {
+            if (candidates[i] == candidate) {
+                return true;
+            }
+        }
+        return false;
     }
 
     
