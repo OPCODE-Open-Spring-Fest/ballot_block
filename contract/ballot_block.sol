@@ -17,15 +17,25 @@ contract ballot_block{
         address candidateAddress;
         uint256 timeStamp;
     }
-    address[] candidates;
-    mapping(address=>vote) public votes;
-    mapping(address=>uint256) voteCount;
-    address winner;
+
+    mapping(address => uint) public votesForCandidates;
+    mapping(address => bool) public hasVoted;
+
+    address[4] private candidates = [
+        0xdD870fA1b7C4700F2BD7f44238821C26f7392148,
+        0x583031D1113aD414F02576BD6afaBfb302140225,
+        0x4B0897b0513fdC7C541B6d9D7E929C4e5364D2dB,
+        0x14723A09ACff6D2A60DcdF7aA4AFf308FDDC160C
+    ];
+
     event startingVote(address startedby);
     event endingVote(address endedby);
-    event AddVote(address indexed voter, address receiver, uint256 timeStamp);
-    event ReElecting(address[] winners);
-    event WinnerDetermined(address winner);
+    event AddVote(address indexed voter, address receiver);
+
+    modifier onlyAfterVoteEnd() {
+        require(isVotingEnded, "Voting has not ended yet");
+        _;
+    }
 
     constructor()
     {
@@ -59,42 +69,37 @@ contract ballot_block{
     function Add(address receiver) external returns(bool)
     {
         // write your code here
+        require(isVotingStarted, "Voting has not started");
+        require(!isVotingEnded, "Voting has already ended");
+        require(!hasVoted[msg.sender], "You have already voted");
+        require(isValidCandidate(receiver), "Not a valid candidate");
+
+        votesForCandidates[receiver] += 1;
+        hasVoted[msg.sender] = true;
+        emit AddVote(msg.sender, receiver);
+        return true;
     }
 
-    function getWinner() external view returns (address FinalWinner) {
-        require(isVotingStarted, "Voting has not started yet");
-        require(isVotingEnded, "Voting has not ended yet");
-        require(!isTied, "Voting has ended up in a tie, re-election required");
-        return winner;
+    function result() external view onlyAfterVoteEnd returns (address winningCandidate, uint highestVotes) {
+        highestVotes = 0;
+        for (uint i = 0; i < candidates.length; i++) {
+            if (votesForCandidates[candidates[i]] > highestVotes) {
+                winningCandidate = candidates[i];
+                highestVotes = votesForCandidates[candidates[i]];
+            }
+        }
     }
 
-    function determineWinner() internal {
-        uint256 maxVotes = 0;
-        uint256 tiedCandidatesCount = 0;
-        address[] memory tiedCandidates;
-        for (uint256 i = 0; i < candidates.length; i++) {
-            if (voteCount[candidates[i]] > maxVotes) {
-                maxVotes = voteCount[candidates[i]];
-                tiedCandidatesCount = 0;
-                tiedCandidates[0] = candidates[i];
-            } else if (voteCount[candidates[i]] == maxVotes) {
-                tiedCandidates[tiedCandidatesCount] = candidates[i];
-                tiedCandidatesCount++;
+    function isValidCandidate(address candidate) internal view returns (bool) {
+        for(uint i = 0; i < candidates.length; i++) {
+            if (candidates[i] == candidate) {
+                return true;
             }
         }
-        if (tiedCandidatesCount > 1) {
-            isTied = true; 
-            delete candidates;
-            for (uint256 i = 0; i < tiedCandidatesCount; i++) {
-                candidates[i] = tiedCandidates[i];
-            }
-            emit ReElecting(candidates);
-            isVotingStarted = false;
-            isVotingEnded = false; 
-            return;
-        }
-        winner = tiedCandidates[0];
-        emit WinnerDetermined(tiedCandidates[0]);
-        return;
+        return false;
     }
+
+    
+
+
 }
