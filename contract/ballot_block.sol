@@ -8,70 +8,60 @@ pragma solidity >=0.7.0<0.9.0;
 //4th candidate : 0x14723A09ACff6D2A60DcdF7aA4AFf308FDDC160C
 
 
-
-contract ballot_block{
-
+contract BallotBlock {
     address public owner;
     bool private isVotingStarted;
     bool private isVotingEnded;
-    uint256 private endTime;
+    uint private endTime;
 
-    struct vote{
+    struct Vote {
         address candidateAddress;
-        uint256 timeStamp;
+        uint timeStamp;
     }
 
-    mapping(address=>vote) public votes;
+    mapping(address => Vote) public votes;
 
     event StartingVote(address startedBy);
     event EndingVote(address endedBy);
-    event AddVote(address indexed voter, address receiver, uint256 timeStamp);
+    event AddVote(address indexed voter, address receiver, uint timeStamp);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this function");
         _;
     }
 
-    constructor()
-    {
+    constructor() {
         owner = msg.sender;
-        isVotingStarted = false;
-        isVotingEnded = false;
     }
 
-    function start() external onlyOwner returns (bool) {
+    function start() external onlyOwner {
         require(!isVotingStarted, "Voting has already started");
         isVotingStarted = true;
         emit StartingVote(msg.sender);
-        return true;
     }
 
-    function end() external onlyOwner returns (bool) {
+    function end() external onlyOwner {
         require(isVotingStarted, "Voting has not started yet");
         require(!isVotingEnded, "Voting has already ended");
         isVotingEnded = true;
         isVotingStarted = false;
         emit EndingVote(msg.sender);
-        return true;
     }
 
-    function add(address receiver) external returns(bool) {
-    require(isVotingStarted, "Voting has not started yet");
-    require(!isVotingEnded, "Voting has already ended");
-    require(votes[msg.sender].timeStamp == 0, "Already voted");
-    votes[msg.sender] = vote(receiver, block.timestamp);
-    emit AddVote(msg.sender, receiver, block.timestamp);
-    return true;
+    function add(address receiver) external {
+        require(isVotingStarted && !isVotingEnded, "Voting is not active");
+        require(votes[msg.sender].timeStamp == 0, "Already voted");
+        votes[msg.sender] = Vote(receiver, block.timestamp);
+        emit AddVote(msg.sender, receiver, block.timestamp);
     }
 
-    function setEndTime(uint256 duration) external onlyOwner {
+    function setEndTime(uint duration) external onlyOwner {
         require(!isVotingEnded, "Voting has already ended");
         endTime = block.timestamp + duration;
     }
 
     function autoEnd() external onlyOwner {
-        require(isVotingStarted, "Voting has not started yet");
-        require(!isVotingEnded, "Voting has already ended");
+        require(isVotingStarted && !isVotingEnded, "Voting is not active");
         require(block.timestamp >= endTime, "Voting end time has not reached");
         isVotingEnded = true;
         isVotingStarted = false;
